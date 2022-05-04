@@ -10,6 +10,8 @@ These are the flake outputs:
         system = "x86_64-darwin";
       };
     };
+
+    packages.x86_64-darwin.website = pkgs.callPackage ./website.nix { };
   }
 #+end_src
 
@@ -17,7 +19,9 @@ This is my home configuration.
 
 #+begin_src nix :tangle home.nix
   { pkgs, ... }: {
-    imports = [ ./module.nix ];
+    imports = [
+      ./module.nix
+    ];
   }
 #+end_src
 
@@ -25,6 +29,30 @@ This is a module for the home configuration.
 
 #+begin_src nix :tangle module.nix
   { pkgs, ... }: {
-    home.packages = [ pkgs.hello ];
+    home.packages = [
+      pkgs.hello
+    ];
+  }
+#+end_src
+
+This is my website!
+
+#+begin_src nix :tangle website.nix
+  { pkgs, ... }:
+
+  pkgs.stdenv.mkDerivation {
+    name = "website";
+    srcs = ./.;
+    buildInputs = [
+      pkgs.emacs
+    ];
+    buildPhase = ''
+      export HOME=$TMPDIR
+      ${pkgs.emacs}/bin/emacs -Q --script publish.el $HOME/html
+    '';
+    installPhase = ''
+      mkdir $out
+      cp -r $HOME/html/. $out
+    '';
   }
 #+end_src

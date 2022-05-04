@@ -3,10 +3,10 @@
 
   inputs.home-manager.url = github:nix-community/home-manager;
 
-  outputs = { self, nixpkgs, home-manager }:
+  outputs = { self, nixpkgs, home-manager }@inputs:
     let
       tangle = pkgs: pkgs.stdenv.mkDerivation {
-        name = "nix-config";
+        name = "tangle";
         src = ./.;
         buildInputs = [
           pkgs.emacs
@@ -17,31 +17,10 @@
         installPhase = ''
           ls -R
           mkdir $out
-          install *.nix $out
+          install * $out
         '';
       };
       pkgs = nixpkgs.legacyPackages.x86_64-darwin;
-
-      website = pkgs.stdenv.mkDerivation {
-        name = "website";
-        srcs = ./.;
-        buildInputs = [
-          pkgs.emacs
-        ];
-        buildPhase = ''
-          export HOME=$TMPDIR
-          ${pkgs.emacs}/bin/emacs -Q --script publish.el $HOME/html
-          ls -R
-        '';
-        installPhase = ''
-          mkdir $out
-          cp -r $HOME/html/. $out
-        '';
-      };
-
     in
-      (import (tangle pkgs)) { inherit pkgs home-manager; } //
-      {
-        packages.x86_64-darwin.website = website;
-      };
+      pkgs.callPackage (import (tangle pkgs)) inputs;
 }
