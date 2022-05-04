@@ -1,0 +1,4 @@
+Proof of concept of a literate flake:
+
+- The [[file:flake.nix::website = pkgs.stdenv.mkDerivation {][~website~]] package exports [[file:config.org][config.org]] as HTML.
+- All other outputs are tangled from [[file:config.org][config.org]].

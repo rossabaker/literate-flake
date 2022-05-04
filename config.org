@@ -1,0 +1,30 @@
+These are the flake outputs:
+
+#+begin_src nix :tangle default.nix
+  { pkgs, home-manager, ... }: {
+    homeConfigurations = {
+      "ross.baker@C02Z721ZLVCG" = home-manager.lib.homeManagerConfiguration rec {
+        username = "ross.baker";
+        homeDirectory = "/Users/ross.baker";
+        configuration = ./home.nix;
+        system = "x86_64-darwin";
+      };
+    };
+  }
+#+end_src
+
+This is my home configuration.
+
+#+begin_src nix :tangle home.nix
+  { pkgs, ... }: {
+    imports = [ ./module.nix ];
+  }
+#+end_src
+
+This is a module for the home configuration.
+
+#+begin_src nix :tangle module.nix
+  { pkgs, ... }: {
+    home.packages = [ pkgs.hello ];
+  }
+#+end_src
